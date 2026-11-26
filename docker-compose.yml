@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      # El WORKDIR del contenedor es /app/data, ahí cae inventario.db
+      # (ruta relativa definida en DatabaseFactory.kt). Con esto persiste
+      # entre reinicios y reconstrucciones de la imagen.
+      - inventario-db:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  inventario-db:
